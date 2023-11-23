@@ -1,6 +1,24 @@
 <script setup lang="ts">
+import InfiniteBoard from './components/InfiniteBoard.vue';
 </script>
 
-<template></template>
+<template>
+    <infinite-board></infinite-board>
+</template>
 
-<style scoped></style>
+<style scoped>
+#canvas {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+}
+
+.content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+}
+</style>
