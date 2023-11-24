@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
+import { reactive, ref } from 'vue';
+import { createCard } from '../card/card';
+import Card from './Card.vue'
 const canvas = ref<HTMLDivElement>()
 const content = ref<HTMLDivElement>()
 let isDragging = false
@@ -31,11 +32,22 @@ const wheel = (e: WheelEvent) => {
 const updateTransform = () => {
     content.value!.style.transform = `translate(${translateX}px, ${translateY}px)`;
 }
+const dbClick = (e: MouseEvent) => {
+    let card = createCard({ x: e.x - translateX, y: e.y - translateY }, { height: 100, width: 300 })
+    console.log(e.x, e.y)
+    cards.push(card)
+
+}
+
+const cards: ICard[] = reactive([])
+
 </script>
 <template>
-    <div id="canvas" ref="canvas" @mousedown="mousedown" @mouseup="mouseup" @wheel="wheel">
+    <div id="canvas" ref="canvas" @mousedown="mousedown" @mouseup="mouseup" @wheel="wheel" @dblclick="dbClick">
         <div class="content" id="content" ref="content">
-            <div class="border border-solid bg-gray-200 w-[300px] h-[300px] rounded-md shadow-sm">123</div>
+            <template v-for="card in cards">
+                <Card :card="card"></Card>
+            </template>
         </div>
     </div>
 </template>
