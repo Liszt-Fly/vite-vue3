@@ -2,23 +2,47 @@
 import { reactive, ref } from 'vue';
 import { createCard } from '../card/card';
 import Card from './Card.vue'
+import { state } from '../GlobalState';
+import { mitter } from '../mitt';
+
 const canvas = ref<HTMLDivElement>()
 const content = ref<HTMLDivElement>()
-let isDragging = false
-let lastX = 0
-let lastY = 0
+let currentCard: ICard | null = null
+let cardCurrentX: number = 0; // 元素的当前 X 位置
+let cardCurrentY: number = 0; // 元素的当前 Y 位置
+let draggableStartX: number = 0; let draggableStartY: number = 0;
+
+let lastX: number = 0
+let lastY: number = 0
 let translateX = 0, translateY = 0;
+const getCard = (e: MouseEvent) => {
+    let target: HTMLDivElement = e.target as HTMLDivElement
+    let card = cards.find(item => item.id === target.getAttribute('cardReference'))
+    if (card) {
+        currentCard = card
+        return card
+    }
+    else {
+        currentCard = null
+        return null
+    }
+
+
+}
 const mousedown = (e: MouseEvent) => {
-    isDragging = true;
+    console.log(getCard(e))
+    state.isDragging = true;
     lastX = e.clientX;
     lastY = e.clientY;
     let canvas = e.target as unknown as HTMLDivElement
     canvas.style.cursor = "grabbing"
 }
 const mouseup = (e: MouseEvent) => {
-    isDragging = false;
+    state.isDragging = false;
     let canvas = e.target as unknown as HTMLDivElement
     canvas!.style.cursor = 'grab';
+    mitter.emit("mouseup")
+
 }
 
 const wheel = (e: WheelEvent) => {
@@ -33,17 +57,32 @@ const updateTransform = () => {
     content.value!.style.transform = `translate(${translateX}px, ${translateY}px)`;
 }
 const dbClick = (e: MouseEvent) => {
+    if (getCard(e)) return
     let card = createCard({ x: e.x - translateX, y: e.y - translateY }, { height: 100, width: 300 })
-    console.log(e.x, e.y)
     cards.push(card)
-
 }
+const mousemove = (e: MouseEvent) => {
+
+    if (!currentCard) return
+    if (state.isDraggableDragging) {
+
+        let transformX = e.clientX - state.offsetX
+        let transformY = e.clientY - state.offsetY
+
+        currentCard.position.x = transformX
+        currentCard.position.y = transformY
+        console.log(currentCard.position)
+
+    }
+}
+
 
 const cards: ICard[] = reactive([])
 
 </script>
 <template>
-    <div id="canvas" ref="canvas" @mousedown="mousedown" @mouseup="mouseup" @wheel="wheel" @dblclick="dbClick">
+    <div id="canvas" ref="canvas" @mousedown.capture="mousedown" @mouseup="mouseup" @wheel="wheel" @dblclick.exact="dbClick"
+        @mousemove="mousemove">
         <div class="content" id="content" ref="content">
             <template v-for="card in cards">
                 <Card :card="card"></Card>
