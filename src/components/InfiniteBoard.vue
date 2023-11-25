@@ -8,16 +8,11 @@ import { mitter } from '../mitt';
 const canvas = ref<HTMLDivElement>()
 const content = ref<HTMLDivElement>()
 let currentCard: ICard | null = null
-let cardCurrentX: number = 0; // 元素的当前 X 位置
-let cardCurrentY: number = 0; // 元素的当前 Y 位置
-let draggableStartX: number = 0; let draggableStartY: number = 0;
 
-let lastX: number = 0
-let lastY: number = 0
 let translateX = 0, translateY = 0;
 const getCard = (e: MouseEvent) => {
     let target: HTMLDivElement = e.target as HTMLDivElement
-    let card = cards.find(item => item.id === target.getAttribute('cardReference'))
+    let card = cards.get(target.getAttribute('cardReference')!)
     if (card) {
         currentCard = card
         return card
@@ -26,14 +21,11 @@ const getCard = (e: MouseEvent) => {
         currentCard = null
         return null
     }
-
-
 }
 const mousedown = (e: MouseEvent) => {
     console.log(getCard(e))
     state.isDragging = true;
-    lastX = e.clientX;
-    lastY = e.clientY;
+
     let canvas = e.target as unknown as HTMLDivElement
     canvas.style.cursor = "grabbing"
 }
@@ -59,7 +51,7 @@ const updateTransform = () => {
 const dbClick = (e: MouseEvent) => {
     if (getCard(e)) return
     let card = createCard({ x: e.x - translateX, y: e.y - translateY }, { height: 100, width: 300 })
-    cards.push(card)
+    cards.set(card.id, card)
 }
 const mousemove = (e: MouseEvent) => {
 
@@ -71,13 +63,13 @@ const mousemove = (e: MouseEvent) => {
 
         currentCard.position.x = transformX
         currentCard.position.y = transformY
-        console.log(currentCard.position)
+
 
     }
 }
 
 
-const cards: ICard[] = reactive([])
+const cards: Map<string, ICard> = reactive(new Map())
 
 </script>
 <template>
@@ -85,7 +77,7 @@ const cards: ICard[] = reactive([])
         @mousemove="mousemove">
         <div class="content" id="content" ref="content">
             <template v-for="card in cards">
-                <Card :card="card"></Card>
+                <Card :card="card[1]"></Card>
             </template>
         </div>
     </div>

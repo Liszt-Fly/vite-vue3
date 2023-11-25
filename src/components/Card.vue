@@ -5,10 +5,9 @@ import { state } from '../GlobalState';
 const props = defineProps<{ card: ICard }>();
 
 let cardEl = ref<HTMLDivElement>();
-let draggableStartX: number, draggableStartY: number;
 
-let cardCurrentX: number = 0; // 元素的当前 X 位置
-let cardCurrentY: number = 0; // 元素的当前 Y 位置
+
+
 
 const mousedown = (e: MouseEvent) => {
     e.stopPropagation()
@@ -17,7 +16,7 @@ const mousedown = (e: MouseEvent) => {
     state.offsetY = e.clientY - props.card.position.y;
     cardEl.value!.style.cursor = 'grabbing';
 }
-const mouseup = (e: MouseEvent) => {
+const mouseup = () => {
     if (!state.isDraggableDragging) return;
     state.isDraggableDragging = false;
     cardEl.value!.style.cursor = 'pointer';
