@@ -9,8 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@svgdotjs/svg.js": "^3.2.0",
+    "@types/d3": "^7.4.3",
+    "@types/snapsvg": "^0.5.8",
     "@types/uuid": "^9.0.7",
+    "bootstrap-icons": "^1.11.2",
+    "d3": "^7.8.5",
+    "jsplumb": "^2.15.6",
     "mitt": "^3.0.1",
+    "snapsvg": "^0.5.1",
     "uuid": "^9.0.1",
     "vue": "^3.3.4"
   },

@@ -1,12 +1,20 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue';
-import { createCard } from '../card/card';
-import Card from './Card.vue'
+import { onMounted, reactive, ref } from 'vue';
 import { state } from '../GlobalState';
+import { createCard } from '../card/card';
 import { mitter } from '../mitt';
+import Card from './Card.vue';
 
 const canvas = ref<HTMLDivElement>()
 const content = ref<HTMLDivElement>()
+
+onMounted(() => {
+    let card1 = createCard({ x: 300, y: 300 }, { width: 100, height: 50 })
+    let card2 = createCard({ x: 100, y: 100 }, { width: 100, height: 50 })
+    cards.set(card1.id, card1)
+    cards.set(card2.id, card2)
+
+})
 let currentCard: ICard | null = null
 
 let translateX = 0, translateY = 0;
@@ -54,13 +62,10 @@ const dbClick = (e: MouseEvent) => {
     cards.set(card.id, card)
 }
 const mousemove = (e: MouseEvent) => {
-
     if (!currentCard) return
-    if (state.isDraggableDragging) {
-
+    if (state.isDraggableDragging && state.mode === "normal") {
         let transformX = e.clientX - state.offsetX
         let transformY = e.clientY - state.offsetY
-
         currentCard.position.x = transformX
         currentCard.position.y = transformY
 

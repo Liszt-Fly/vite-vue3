@@ -5,5 +5,6 @@ export const state = reactive({
   isDraggableDragging: false,
   offsetX: 0,
   offsetY: 0,
+  mode: "normal",
 });
 export const canvas = ref<HTMLDivElement>();
